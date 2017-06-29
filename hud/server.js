@@ -7,9 +7,6 @@ var app = express();
 var proxy = require('express-http-proxy');
 var url = require('url');
 
-// Get the config module
-var config = require('./config');
-
 var server = http.createServer(app);
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
