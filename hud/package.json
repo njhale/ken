@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node server",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -27,6 +27,7 @@
     "aframe-animation-component": "^3.2.5",
     "aframe-bmfont-text-component": "^0.1.4",
     "core-js": "^2.4.1",
+    "express-http-proxy": "^1.0.4",
     "hammerjs": "^2.0.8",
     "rxjs": "^5.1.0",
     "zone.js": "^0.8.4"
