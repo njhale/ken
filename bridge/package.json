@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "express": "^4.15.3",
+    "socket.io": "^2.0.3"
+  },
+  "name": "bridge",
+  "version": "1.0.0",
+  "description": "This is the bridge component for 2017 UPS Hackathon",
+  "main": "server.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NJHale/ken.git"
+  },
+  "keywords": [
+    "ken",
+    "hackathon",
+    "awesome"
+  ],
+  "author": "Mark Falto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NJHale/ken/issues"
+  },
+  "homepage": "https://github.com/NJHale/ken#readme"
+}
