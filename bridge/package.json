@@ -6,10 +6,10 @@
   "name": "bridge",
   "version": "1.0.0",
   "description": "This is the bridge component for 2017 UPS Hackathon",
-  "main": "server.js",
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",

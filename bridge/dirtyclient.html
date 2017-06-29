@@ -1,0 +1,17 @@
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script>
+  const socket = io('http://localhost:8080');
+
+  socket.on('register', function(data){
+    console.log('registration sent for ' + data.name);
+
+    var div = document.createElement('div');
+    div.innerHTML = data.name
+    document.body.appendChild(div);
+
+  });
+</script>
+<body>
+</body>
+</html>
