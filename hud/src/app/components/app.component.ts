@@ -10,7 +10,6 @@ export class AppComponent implements OnInit {
   aframe: any;
   timeout: any;
 
-
   constructor(ref: ElementRef) {
       this.elem = ref.nativeElement;
   }

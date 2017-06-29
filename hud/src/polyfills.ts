@@ -50,6 +50,9 @@ import 'core-js/es7/reflect';
 // import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 
 
+import 'aframe';
+import 'aframe-template-component';
+
 
 /***************************************************************************************************
  * Zone JS is required by Angular itself.
