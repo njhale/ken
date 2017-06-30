@@ -7,23 +7,32 @@ var io = require('socket.io')(server);
 const APP_POD_NAME = process.env.APP_POD_NAME || "[RUNNING LOCALLY]"
 const PORT = process.env.BRIDGE_SERVICE_PORT || 8080;
 const HOST = process.env.BRIDGE_SERVICE_HOST || 'localhost';
+var connections = [];
 
 
 io.on('connection', function (socket) {
   console.log(`connection confirmed from ${socket.id}`);
+ connections[socket.id] = 1;
+// Emit the exit of the connection on socket's disconnect (status 0 == exiting)
+  socket.on('disconnect', () => {
+    delete connections[socket.id];
+  });
 
   socket.on('whereabouts', function (data){
     console.log(`whereabouts pushed from  ${data.name}`);
     io.emit('clientwhereabouts', data);
   });
-})
+
+});
+
+
 
 
 app.get('/trigger', (req, res) => {
   try {
     console.log('register url hit ' + APP_POD_NAME);
     // Return a 200 'OK'
-    io.emit('trigger', { "name": 'nichhale@gmail.com' });
+    io.emit('trigger', { "name": 'mfalto@gmail.com' });
     res.status(200).send(`registration complete ${APP_POD_NAME}`);
   } catch (err) {
     console.log(`Something went wrong while registering a client /: ${err}`);
@@ -31,6 +40,7 @@ app.get('/trigger', (req, res) => {
 });
 
 
+/*
 app.get('/whereabouts', (req, res) => {
   try {
     console.log('whereabouts url hit ' + APP_POD_NAME);
@@ -41,6 +51,8 @@ app.get('/whereabouts', (req, res) => {
     console.log(`Something went wrong while registering a client /: ${err}`);
   }
 });
+*/
+
 
 /**
 * Readiness health-check endpoint
