@@ -1,36 +1,44 @@
-declare var cameraSource;
 
-cameraSource = (function(global) {
 
-  var id = 'source-camera',
-    title = 'Camera',
-    videoElement = null,
-    constraints = {
+export class CameraSource {
+
+  id: any;
+  title: any;
+  videoElement: any;
+  constraints: any;
+
+  constructor() {
+    this.id = 'source-camera';
+    this.title = 'Camera';
+    this.videoElement = null;
+    this.constraints = {
       video: true
     };
-
-  function start(opts) {
-    if (opts.constraints) {
-      constraints = opts.constraints;
-    }
-    videoElement = opts.videoElement;
-    showCameraPreview(opts.callback);
   }
 
-  function showCameraPreview(cb) {
-    navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
 
-      if (videoElement) {
-        videoElement.srcObject = stream;
-        videoElement.play();
+
+  showCameraPreview(cb: any) {
+    navigator.mediaDevices.getUserMedia(this.constraints).then((stream) => {
+
+      if (this.videoElement) {
+        this.videoElement.srcObject = stream;
+        this.videoElement.play();
       }
 
       if (cb) {
         cb(stream);
       }
 
-    }, function(err) { console.error(err); });
+    }, function(err: any) { console.error(err); });
   }
-})
 
-export default cameraSource;
+  start(opts: any) {
+    if (opts.constraints) {
+      this.constraints = opts.constraints;
+    }
+    this.videoElement = opts.videoElement;
+    this.showCameraPreview(opts.callback);
+  }
+
+}
