@@ -1,6 +1,6 @@
 FROM node:6.10.1
 
-MAINTAINER Nick Hale <NJohnHale@gmail.com>
+MAINTAINER Nick Costanzo <costanzo.nicholas.j@gmail.com>
 
 # Switch to user root
 USER root
@@ -13,11 +13,12 @@ WORKDIR /app
 #   Otherwise manually copy individual files and directories
 COPY . .
 
-# install dependencies and give the necessary permissions for things to work correctly
+# install dependencies, install typings for typescript, build the angular app,
+#   and give the necessary permissions for things to work correctly
 RUN apt-get update && apt-get install -y rsync && \
     npm install && \
-    npm install -g @angular/cli && \
-    ng build --prod && \
+    # npm run typings install && \
+    npm run ng build - --prod && \
     npm install -g nodemon && \
     chmod 777 -R /app && mkdir /.config && chmod 777 -R /.config
 
