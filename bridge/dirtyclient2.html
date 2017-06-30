@@ -1,7 +1,7 @@
 <html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 <script>
-  const socket = io('http://localhost:8080');
+  const socket = io('https://bridge-ken.openshift.nhale.org');
 
   socket.on('trigger', function(data){
     console.log('trigger sent to send a wearabouts for ' + data.name);
