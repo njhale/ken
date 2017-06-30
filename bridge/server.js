@@ -2,12 +2,24 @@
 var app = require("express")();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+const util = require('util');
+var client = require('./testClient/testclient.js').Client;
+
 
 
 const APP_POD_NAME = process.env.APP_POD_NAME || "[RUNNING LOCALLY]"
 const PORT = process.env.BRIDGE_SERVICE_PORT || 8080;
 const HOST = process.env.BRIDGE_SERVICE_HOST || 'localhost';
 var connections = [];
+
+
+/*
+* -------------------------------------------------------------------------
+* sends out clientwhereabouts every second
+*/
+var newClient = new client(io,util);
+newClient.start();
+//-------------------------------------------------------------------------
 
 
 io.on('connection', function (socket) {
