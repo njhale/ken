@@ -1,5 +1,4 @@
 function Client(io,util) {
-  const setTimeoutPromise = util.promisify(setTimeout);
 
   this.start = () => {
     var that = this;
