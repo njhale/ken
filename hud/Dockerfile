@@ -16,6 +16,9 @@ COPY . .
 # install dependencies, install typings for typescript, build the angular app,
 #   and give the necessary permissions for things to work correctly
 RUN apt-get update && apt-get install -y rsync && \
+    npm install && \
+    # npm run typings install && \
+    npm run ng build - --prod && \
     npm install -g nodemon && \
     chmod 777 -R /app && mkdir /.config && chmod 777 -R /.config
 
