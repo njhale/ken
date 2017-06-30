@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
     let myLon = this.lon * Math.cos(myLat);
 
     let tLat = wb.position[0] * 110.574;
-    let tLon = wb.position[1] * Math.cos(tLat);
+    let tLon = wb.position[1] * Math.cos(tLat * (180/Math.PI));
 
     let dLat = (tLat - myLat)*1000;
     let dLon = (tLon - myLon)*1000;
