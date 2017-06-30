@@ -128,9 +128,9 @@ export class AppComponent implements OnInit {
     let dLon = (tLon - myLon)*1000;
 
     return {
-      "x": dLon,
+      "x": dLat,
       "y": "1",
-      "z": dLat
+      "z": dLon
     }
   }
 
