@@ -26,12 +26,12 @@ server.listen(8080, function () {
 /*******************************************************************
 * ACQUIRE ENVIRONMENT VARIABLES FOR HOST:PORT TO PROXY REQUESTS TO *
 *******************************************************************/
-setInterval(() => {
-  console.log('I\'m emitting now!');
-  ioCli.emit('whereabouts',
-    { "name": 'krang', "position":[ 41.0662516,-74.1727549, 0], "tm": new Date() });
-  console.log('I\'ve emitted');
-}, 5000);
+// setInterval(() => {
+//   console.log('I\'m emitting now!');
+//   ioCli.emit('whereabouts',
+//     { "name": 'krang', "position":[ 41.0662516,-74.1727549, 0], "tm": new Date() });
+//   console.log('I\'ve emitted');
+// }, 5000);
 
 /****************************************************************
 * REGISTER DIRECTORY CONTENT TO BE VIEWED BY APP AS / DIRECTORY *

@@ -21,7 +21,8 @@ export class AppComponent implements OnInit {
   lat: number;
   lon: number;
   private name: string;
-  private whereabouts: WhereaboutMap = {};
+  public whereabouts: WhereaboutMap = {};
+  public posMap: PosMap = {};
   private cameraSource: CameraSource;
 
 
@@ -97,10 +98,17 @@ export class AppComponent implements OnInit {
 
     this.connection = this.whereaboutService.getMessages().subscribe((message) => {
       let wb = message as Whereabout;
-      console.log()
       if(wb.name !== this.name){
         this.whereabouts[wb.name] = wb;
-        console.log('wb stored!');
+        try {
+          // attempt to set the position attribute
+          var billboard = document.getElementById(wb.name);
+          billboard.setAttribute('position', this.mapPosition(wb));
+        } catch (ex) {
+          console.log(ex);
+        }
+
+        // console.log('wb stored!');
       }
       // if(thispac.pkgId && thispac.position.length > 0){
       //   this.updateLocation(thispac.pkgId, thispac.position, thispac.time);
@@ -109,13 +117,21 @@ export class AppComponent implements OnInit {
 
   }
 
-  mapPosition(wb: Whereabout) : string {
-    let dLat = (wb.position[0] - this.lat) * 110.574;
-    let dLon = (wb.position[1] - this.lon) * Math.cos(dLat);
+  mapPosition(wb: Whereabout) : any {
+    let myLat = this.lat * 110.574;
+    let myLon = this.lon * Math.cos(myLat);
 
-    let pos = `${dLon*1000} 1 ${dLat*1000}`;
-    console.log(`my pos: ${pos}`);
-    return pos;
+    let tLat = wb.position[0] * 110.574;
+    let tLon = wb.position[1] * Math.cos(tLat);
+
+    let dLat = (tLat - myLat)*1000;
+    let dLon = (tLon - myLon)*1000;
+
+    return {
+      "x": dLon,
+      "y": "1",
+      "z": dLat
+    }
   }
 
   long2UTM(long: number) : number {
@@ -130,4 +146,8 @@ export class AppComponent implements OnInit {
 
 interface WhereaboutMap {
   [name: string]: Whereabout
+}
+
+interface PosMap {
+  [name: string]: string
 }
