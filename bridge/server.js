@@ -12,14 +12,6 @@ const HOST = process.env.BRIDGE_SERVICE_HOST || 'localhost';
 var connections = [];
 
 
-/*
- * -------------------------------------------------------------------------
- * sends out clientwhereabouts every second
- */
-var newClient = new client(io, util);
-newClient.start();
-//-------------------------------------------------------------------------
-
 
 io.on('connection', (socket) => {
   console.log(`connection confirmed from ${socket.id}`);
@@ -30,12 +22,25 @@ io.on('connection', (socket) => {
   });
 
 
-  socket.on('whereabouts', (data) => {
-    console.log(`whereabouts pushed from  ${data.name}`);
-    io.emit('whereabouts', data);
+  socket.on('whereabouts', (msg) => {
+    console.log(`whereabout received: ${msg}`);
+    //io.emit('whereabouts', data);
   });
 
 });
+
+setInterval(() => {
+  socket.emit('whereabouts', 
+    { "name": 'krang', "position":[ 41.0662516,-74.1727549, 0], "tm": new Date() });
+}, 5000);
+
+/*
+ * -------------------------------------------------------------------------
+ * sends out clientwhereabouts every second
+ */
+// var newClient = new client(io, util);
+// newClient.start();
+//-------------------------------------------------------------------------
 
 
 

@@ -5,7 +5,7 @@ function Client(io,util) {
     setTimeout(() => {
       // value === 'foobar' (passing values is optional)
       // This is executed after about 40 milliseconds.
-      console.log('time tripped');
+      //console.log('time tripped');
       io.emit('whereabouts', { "name": 'krang', "position":[ 41.0662516,-74.1727549, 0], "tm": new Date() });
       that.start();
     }, 1000);
