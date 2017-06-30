@@ -7,7 +7,7 @@ function Client(io,util) {
       // value === 'foobar' (passing values is optional)
       // This is executed after about 40 milliseconds.
       console.log('time tripped');
-      io.emit('clientwhereabouts', { "name": 'timedClient@gmail.com', "position":[ 0, 0, 0], "MyDate":"@1269388885866@" });
+      io.emit('clientwhereabouts', { "name": 'timedClient@gmail.com', "position":[ 41.0662516,-74.1727549, 0], "MyDate":"@1269388885866@" });
       that.start();
     });
   };
