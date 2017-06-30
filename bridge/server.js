@@ -9,6 +9,39 @@ const PORT = process.env.BRIDGE_SERVICE_PORT || 8080;
 const HOST = process.env.BRIDGE_SERVICE_HOST || 'localhost';
 
 
+io.on('connection', function (socket) {
+  console.log(`connection confirmed from ${socket.id}`);
+
+  socket.on('whereabouts', function (data){
+    console.log(`whereabouts pushed from  ${data.name}`);
+    io.emit('clientwhereabouts', data);
+  });
+})
+
+
+app.get('/trigger', (req, res) => {
+  try {
+    console.log('register url hit ' + APP_POD_NAME);
+    // Return a 200 'OK'
+    io.emit('trigger', { "name": 'nichhale@gmail.com' });
+    res.status(200).send(`registration complete ${APP_POD_NAME}`);
+  } catch (err) {
+    console.log(`Something went wrong while registering a client /: ${err}`);
+  }
+});
+
+
+app.get('/whereabouts', (req, res) => {
+  try {
+    console.log('whereabouts url hit ' + APP_POD_NAME);
+    // Return a 200 'OK'
+    io.emit('whereabouts', { "name": 'nichhale@gmail.com', "position":[ 0, 0, 0], "MyDate":"@1269388885866@" });
+    res.status(200).send(`registration complete ${APP_POD_NAME}`);
+  } catch (err) {
+    console.log(`Something went wrong while registering a client /: ${err}`);
+  }
+});
+
 /**
 * Readiness health-check endpoint
 **/

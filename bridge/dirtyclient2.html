@@ -1,0 +1,27 @@
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script>
+  const socket = io('http://localhost:8080');
+
+  socket.on('trigger', function(data){
+    console.log('trigger sent to send a wearabouts for ' + data.name);
+
+    var div = document.createElement('div')
+    div.innerHTML = 'trigger sent to send a wearabouts for ' + data.name ;
+    socket.emit('whereabouts', { "name": 'dirtyclient2@gmail.com', "position":[ 0, 0, 0], "MyDate":"@1269388885866@" });
+    document.body.appendChild(div);
+
+  });
+
+  socket.on('clientwhereabouts', function(data){
+    console.log('oh shit theres a ' + data.name + 'near me');
+
+    var div = document.createElement('div')
+    div.innerHTML = 'oh shit theres a ' + data.name + 'near me';
+    document.body.appendChild(div);
+  });
+
+</script>
+<body>
+</body>
+</html>
