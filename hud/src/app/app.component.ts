@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   public whereabouts: WhereaboutMap = {};
   public posMap: PosMap = {};
   private cameraSource: CameraSource;
+  private direction: number;
 
 
   constructor(ref: ElementRef,
@@ -54,6 +55,14 @@ export class AppComponent implements OnInit {
       this.whereaboutService.socket.emit('whereabouts', wb);
 
     }, 1000);
+
+    window.addEventListener('deviceorientation', (eventData) => {
+      // alpha is the compass direction the device is facing in degrees
+      var dir = eventData.alpha;
+      console.log(`compass: ${dir}`);
+      // Set the direction in degrees
+      this.direction = dir;
+    }, false);
   }
 
   startCamera(id: any) {
@@ -126,11 +135,11 @@ export class AppComponent implements OnInit {
 
     let dLat = (tLat - myLat)*1000;
     let dLon = (tLon - myLon)*1000;
-
+9
     return {
-      "x": dLat,
+      "x": dLon,
       "y": "1",
-      "z": dLon
+      "z": dLat
     }
   }
 
