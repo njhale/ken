@@ -18,7 +18,7 @@ COPY . .
 RUN apt-get update && apt-get install -y rsync && \
     npm install && \
     # npm run typings install && \
-    npm run ng build --prod && \
+    npm run build && \
     npm install -g nodemon && \
     chmod 777 -R /app && mkdir /.config && chmod 777 -R /.config
 
