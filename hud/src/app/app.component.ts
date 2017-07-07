@@ -3,8 +3,7 @@ import { CameraSource } from './camera.source';
 
 import { Whereabout } from './models/whereabout';
 import { WhereaboutService } from './services/whereabout.service';
-
-import * as proj4 from "proj4";
+import { SpacialService } from './services/spacial.service';
 
 
 @Component({
@@ -18,48 +17,71 @@ export class AppComponent implements OnInit {
   aframe: any;
   timeout: any;
   connection: any;
-  lat: number;
-  lon: number;
+  wb: Whereabout;
+
+  whereabouts: Map<string, Whereabout>;
+
   private name: string;
-  public whereabouts: WhereaboutMap = {};
-  public posMap: PosMap = {};
   private cameraSource: CameraSource;
   private direction: number;
+  private maxAge: number = 10000;// milliseconds -> 10 seconds
 
 
   constructor(ref: ElementRef,
-    private whereaboutService: WhereaboutService) {
-    console.log('here we are!');
+    private whereaboutService: WhereaboutService,
+    private spacialService: SpacialService) {
+    // Initialize the whereabout map
+    this.whereabouts = new Map<string, Whereabout>();
     this.elem = ref.nativeElement;
     this.cameraSource = new CameraSource();
 
     // Connect to the socket
     this.whereaboutService.socketConnect();
 
-    this.name = `nick-${Math.random()*1000 + 1}`;
+    this.name = `nick-${Math.random() * 1000 + 1}`;
 
     // Get the lat and long every second
     setInterval(() => {
+      let lat = 0;
+      let lon = 0;
+
       navigator.geolocation.getCurrentPosition((position) => {
-        this.lat = position.coords.latitude;
-        this.lon = position.coords.longitude;
+        lat = position.coords.latitude;
+        lon = position.coords.longitude;
       });
 
       // Send the data through the socket
-      let wb: Whereabout = {
+      this.wb = {
         name: this.name,
-        position: [this.lat, this.lon, 0],
+        position: [lat, lon, 0],
         tm: new Date()
       };
 
-      this.whereaboutService.socket.emit('whereabouts', wb);
+      this.whereaboutService.socket.emit('whereabouts', this.wb);
 
     }, 1000);
 
+    // Delete all whereabouts older than 10 seconds
+    setInterval(() => {
+
+      // Get current time
+      let tm = new Date();
+
+      // Iterate through each key-value pair
+      this.whereabouts.forEach((wb, key, map) => {
+        if (tm.getTime() - wb.tm.getTime() > this.maxAge) {
+          // Older than the max age for any info. Scrub it from the map.
+          this.whereabouts.delete(key);
+        }
+      });
+
+    }, 5000);
+
+    // Set the event listener for compass degrees
     window.addEventListener('deviceorientation', (eventData) => {
       // alpha is the compass direction the device is facing in degrees
       var dir = eventData.alpha;
-      console.log(`compass: ${dir}`);
+      // console.log(`compass: ${dir}`);
       // Set the direction in degrees
       this.direction = dir;
     }, false);
@@ -73,12 +95,10 @@ export class AppComponent implements OnInit {
       constraints: {
         video: { deviceId: id ? { exact: id } : undefined }
       },
-      callback: function() {
-
-      }
+      callback: () => { }
     });
 
-   }
+  }
 
   ngOnInit() {
     console.log('This is ng init!');
@@ -89,7 +109,7 @@ export class AppComponent implements OnInit {
       var id;
       console.log('In promise');
       devices.forEach(function(device) {
-        console.log(device.kind, ": ",  device.label, " id = ",  device.deviceId);
+        console.log(device.kind, ": ", device.label, " id = ", device.deviceId);
         if (device.kind === 'videoinput') {
           id = device.deviceId;
         }
@@ -107,18 +127,19 @@ export class AppComponent implements OnInit {
 
     this.connection = this.whereaboutService.getMessages().subscribe((message) => {
       let wb = message as Whereabout;
-      if(wb.name != this.name){
+      if (wb.name !== this.name) {
         this.whereabouts[wb.name] = wb;
         try {
           // attempt to set the position attribute
           var billboard = document.getElementById(wb.name);
-          billboard.setAttribute('position', this.mapPosition(wb));
+          //billboard.setAttribute('position', this.mapPosition(wb));
         } catch (ex) {
           console.log(ex);
         }
 
         // console.log('wb stored!');
       }
+
       // if(thispac.pkgId && thispac.position.length > 0){
       //   this.updateLocation(thispac.pkgId, thispac.position, thispac.time);
       // }
@@ -126,37 +147,32 @@ export class AppComponent implements OnInit {
 
   }
 
-  mapPosition(wb: Whereabout) : any {
-    let myLat = this.lat * 110.574;
-    let myLon = this.lon * Math.cos((myLat) * (Math.PI/180));
-    let tLat = wb.position[0] * 110.574;
-    let tLon = wb.position[1] * Math.cos((tLat) * (Math.PI/180));
-    console.log(`tLat: ${tLat}`)
+  mapPosition(wb: Whereabout): any {
 
-    let dLat = (tLat - myLat)*1000;
-    let dLon = (tLon - myLon)*1000;
-9
+    // Get the distance in meters between both points
+    let r = this.spacialService.distance(this.wb, wb);
+    // Get the angle in radians between both points
+    let theta = this.spacialService.angle(this.wb, wb);
+    // Calculate the cartesian coordinates from the given polar coords
+    let x = r * Math.cos(theta);
+    let y = r * Math.sin(theta);
+
+    console.log(`mapPosition: (x, y) => ($x, $y)`);
+
     return {
-      "x": dLon,
+      "x": x,
       "y": "1",
-      "z": dLat
+      "z": y
     }
+    
   }
 
-  long2UTM(long: number) : number {
-    return (Math.floor((long + 180)/6) % 60) + 1;
+  long2UTM(long: number): number {
+    return (Math.floor((long + 180) / 6) % 60) + 1;
   }
 
 
-  keys() : Array<any> {
-    return Object.keys(this.whereabouts);
+  getWhereaboutskeys(): Array<string> {
+    return Array.from(this.whereabouts.keys());
   }
-}
-
-interface WhereaboutMap {
-  [name: string]: Whereabout
-}
-
-interface PosMap {
-  [name: string]: string
 }
