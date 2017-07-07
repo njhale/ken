@@ -1,5 +1,5 @@
 <a-scene id='a-scene'>
-  <a-entity light="ambient: directional" *ngFor="#name of getWhereaboutsKeys()" id="{{name}}">
+  <a-entity look-at=[camera] light="ambient: directional" *ngFor="let name of getWhereaboutsKeys()" id="{{name}}" position="{{mapPosition(this.wb, whereabouts.get(name))}}">
   </a-entity>
 </a-scene>
 

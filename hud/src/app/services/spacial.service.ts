@@ -32,7 +32,7 @@ export class SpacialService {
     let x = Math.cos(fromRads[0]) * Math.sin(toRads[0]) - Math.sin(fromRads[0])
             * Math.cos(toRads[0]) * Math.cos(diffRads[1]);
 
-    console.log(`(x, y) => ($x, $y)`);
+    console.log(`toDegrees: (x, y) => ($x, $y)`);
 
     let brng = Math.atan2(y, x);
     brng = this.toDegrees(brng);
