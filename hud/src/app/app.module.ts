@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 
 import { WhereaboutService } from './services/whereabout.service';
+import { SpacialService } from './services/spacial.service';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { WhereaboutService } from './services/whereabout.service';
     HttpModule,
   ],
   providers: [
-    WhereaboutService
+    WhereaboutService,
+    SpacialService
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
