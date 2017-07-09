@@ -19,7 +19,9 @@ export class AppComponent implements OnInit {
   connection: any;
   wb: Whereabout;
 
+
   whereabouts: Map<string, Whereabout>;
+  whereaboutskeys: string[];
 
   private name: string;
   private cameraSource: CameraSource;
@@ -128,14 +130,16 @@ export class AppComponent implements OnInit {
     this.connection = this.whereaboutService.getMessages().subscribe((message) => {
       let wb = message as Whereabout;
       if (wb.name !== this.name) {
-        this.whereabouts[wb.name] = wb;
-        try {
-          // attempt to set the position attribute
-          var billboard = document.getElementById(wb.name);
-          //billboard.setAttribute('position', this.mapPosition(wb));
-        } catch (ex) {
-          console.log(ex);
-        }
+        this.whereabouts.set(wb.name, wb);
+        this.whereaboutskeys = Array.from(this.whereabouts.keys());
+
+        // try {
+        //   // attempt to set the position attribute
+        //   var billboard = document.getElementById(wb.name);
+        //   billboard.setAttribute('position', this.mapPosition(wb));
+        // } catch (ex) {
+        //   console.log(ex);
+        // }
 
         // console.log('wb stored!');
       }
@@ -164,15 +168,11 @@ export class AppComponent implements OnInit {
       "y": "1",
       "z": y
     }
-    
+
   }
 
   long2UTM(long: number): number {
     return (Math.floor((long + 180) / 6) % 60) + 1;
   }
 
-
-  getWhereaboutskeys(): Array<string> {
-    return Array.from(this.whereabouts.keys());
-  }
 }

@@ -41,6 +41,7 @@
 // import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 
 import 'aframe'; // MUST import A-Frame before zone.js!
+import 'aframe-look-at-component';
 
 /** Evergreen browsers require these. **/
 import 'core-js/es6/reflect';
