@@ -22,7 +22,7 @@
         "styles.css"
       ],
       "scripts": [
-        "./node_modules/aframe-look-at-component/index.js"
+        "./node_modules/aframe-look-at-component/dist/aframe-look-at-component.min.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
