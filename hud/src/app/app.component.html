@@ -1,6 +1,31 @@
 <a-scene id='a-scene'>
-  <a-entity look-at=[camera] light="ambient: directional" *ngFor="let name of whereaboutskeys" id="{{name}}" position="{{mapPosition(this.wb, whereabouts.get(name))}}">
-    <a-box color='red'></a-box>
+
+  <a-assets>
+    <img id="groose" src="https://yt3.ggpht.com/-48LZOmdRJAc/AAAAAAAAAAI/AAAAAAAAAAA/BAu12b3YJ7Y/s900-c-k-no-mo-rj-c0xffffff/photo.jpg">
+  </a-assets>
+
+
+
+  <a-entity look-at=[camera] *ngFor="let key of whereaboutskeys" id="{{key}}" position="{{mapPosition(this.wb, whereabouts.get(key))}}">
+    <!-- Label a plane, three times. -->
+    <a-plane width="1" depth="1"
+      text="baseline: bottom; font: kelsonsans; color: black; value:
+                       kelsonsans font
+                       align default (left)
+                       baseline bottom" 
+      text__2="baseline: top; align: right; font: kelsonsans; color: black; value: {{name}}"
+      text__3="baseline: center; align: center; font: kelsonsans; color: black; value:
+                          kelsonsans font
+                          align center
+                          baseline center">
+      <a-image src='#groose'></a-image>
+      <!-- Reference marks, so we can see where the label is aligning. -->
+      <a-entity mixin="marker" position="-0.5 0 0"></a-entity>
+      <a-entity mixin="marker" position="-0.25 0 0"></a-entity>
+      <a-entity mixin="marker" position="0 0 0"></a-entity>
+      <a-entity mixin="marker" position="0.25 0 0"></a-entity>
+      <a-entity mixin="marker" position="0.5 0 0"></a-entity>
+    </a-plane>
   </a-entity>
 </a-scene>
 

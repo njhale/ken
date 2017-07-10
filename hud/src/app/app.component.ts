@@ -71,13 +71,14 @@ export class AppComponent implements OnInit {
 
       // Iterate through each key-value pair
       this.whereabouts.forEach((wb, key, map) => {
-        if (tm.getTime() - wb.tm.getTime() > this.maxAge) {
+        if (tm.getTime() - this.wb.tm.getTime() > this.maxAge) {
           // Older than the max age for any info. Scrub it from the map.
           this.whereabouts.delete(key);
+          this.whereaboutskeys = Array.from(this.whereabouts.keys());
         }
       });
 
-    }, 5000);
+    }, this.maxAge);
 
     // Set the event listener for compass degrees
     window.addEventListener('deviceorientation', (eventData) => {
@@ -132,7 +133,7 @@ export class AppComponent implements OnInit {
       if (wb.name !== this.name) {
         this.whereabouts.set(wb.name, wb);
         this.whereaboutskeys = Array.from(this.whereabouts.keys());
-
+        console.log(`Receiving data for ${wb.name}`);
         // try {
         //   // attempt to set the position attribute
         //   var billboard = document.getElementById(wb.name);
@@ -153,6 +154,7 @@ export class AppComponent implements OnInit {
 
   mapPosition(wb: Whereabout): any {
 
+    console.log(`Whereabouts: ${wb.position} - ${this.wb.position}`);
     // Get the distance in meters between both points
     let r = this.spacialService.distance(this.wb, wb);
     // Get the angle in radians between both points
@@ -161,7 +163,7 @@ export class AppComponent implements OnInit {
     let x = r * Math.cos(theta);
     let y = r * Math.sin(theta);
 
-    console.log(`mapPosition: (x, y) => ($x, $y)`);
+    //console.log(`*ngFor called! mapPosition: (x, y) => (${x}, ${y})`);
 
     return {
       "x": x,
