@@ -5,26 +5,11 @@
   </a-assets>
 
 
-
-  <a-entity look-at=[camera] *ngFor="let key of whereaboutskeys" id="{{key}}" position="{{mapPosition(this.wb, whereabouts.get(key))}}">
+  <a-entity look-at=[camera] *ngFor="let key of whereaboutskeys" id="{{key}}">
     <!-- Label a plane, three times. -->
     <a-plane width="1" depth="1"
-      text="baseline: bottom; font: kelsonsans; color: black; value:
-                       kelsonsans font
-                       align default (left)
-                       baseline bottom" 
-      text__2="baseline: top; align: right; font: kelsonsans; color: black; value: {{name}}"
-      text__3="baseline: center; align: center; font: kelsonsans; color: black; value:
-                          kelsonsans font
-                          align center
-                          baseline center">
+      text="baseline: center; align: center; font: kelsonsans; color: black; value: groose {{key}}">
       <a-image src='#groose'></a-image>
-      <!-- Reference marks, so we can see where the label is aligning. -->
-      <a-entity mixin="marker" position="-0.5 0 0"></a-entity>
-      <a-entity mixin="marker" position="-0.25 0 0"></a-entity>
-      <a-entity mixin="marker" position="0 0 0"></a-entity>
-      <a-entity mixin="marker" position="0.25 0 0"></a-entity>
-      <a-entity mixin="marker" position="0.5 0 0"></a-entity>
     </a-plane>
   </a-entity>
 </a-scene>

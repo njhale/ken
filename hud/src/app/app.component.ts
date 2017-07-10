@@ -45,6 +45,8 @@ export class AppComponent implements OnInit {
     // Instantiate the whereabout
     this.wb = new Whereabout();
     this.wb.name = this.name;
+    this.wb.position = [0, 0, 0];
+    this.wb.tm = new Date();
 
     // Get the lat and long every second
     setInterval(() => {
@@ -52,22 +54,23 @@ export class AppComponent implements OnInit {
       navigator.geolocation.getCurrentPosition((position) => {
         this.wb.position[0] = position.coords.latitude;
         this.wb.position[1] = position.coords.longitude;
+        this.wb.tm = new Date();
         this.whereaboutService.socket.emit('whereabouts', this.wb);
       });
     }, 1000);
 
     // Delete all whereabouts older than 10 seconds
     setInterval(() => {
-
-      // Get current time
       let tm = new Date();
 
       // Iterate through each key-value pair
       this.whereabouts.forEach((wb, key, map) => {
-        if (tm.getTime() - this.wb.tm.getTime() > this.maxAge) {
+        console.log(`wb.tm: ${wb.tm}`);
+        if (tm.getTime() - wb.tm.getTime() > this.maxAge) {
           // Older than the max age for any info. Scrub it from the map.
           this.whereabouts.delete(key);
           this.whereaboutskeys = Array.from(this.whereabouts.keys());
+          console.log(`${wb.name} deleted!`);
         }
       });
 
@@ -97,15 +100,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('This is ng init!');
-
     this.aframe = this.elem.querySelector('a-scene');
-    console.log('Got the f-ing aframe')
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       var id;
       console.log('In promise');
       devices.forEach(function(device) {
-        console.log(device.kind, ": ", device.label, " id = ", device.deviceId);
+        // console.log(device.kind, ": ", device.label, " id = ", device.deviceId);
         if (device.kind === 'videoinput') {
           id = device.deviceId;
         }
@@ -126,14 +126,14 @@ export class AppComponent implements OnInit {
       if (wb.name !== this.name) {
         this.whereabouts.set(wb.name, wb);
         this.whereaboutskeys = Array.from(this.whereabouts.keys());
-        console.log(`Receiving data for ${wb.name} - whereabouts ${wb.position}`);
-        // try {
-        //   // attempt to set the position attribute
-        //   var billboard = document.getElementById(wb.name);
-        //   billboard.setAttribute('position', this.mapPosition(wb));
-        // } catch (ex) {
-        //   console.log(ex);
-        // }
+        //console.log(`Receiving data for ${wb.name} - whereabouts ${wb.position}`);
+        try {
+          // attempt to set the position attribute
+          var billboard = document.getElementById(wb.name);
+          billboard.setAttribute('position', this.mapPosition(wb));
+        } catch (ex) {
+          console.log(ex);
+        }
 
         // console.log('wb stored!');
       }
@@ -146,6 +146,7 @@ export class AppComponent implements OnInit {
   }
 
   mapPosition(wb: Whereabout): any {
+
     // Get the distance in meters between both points
     let r = this.spacialService.distance(this.wb, wb);
     // Get the angle in radians between both points
@@ -154,7 +155,7 @@ export class AppComponent implements OnInit {
     let x = r * Math.cos(theta);
     let y = r * Math.sin(theta);
 
-    //console.log(`*ngFor called! mapPosition: (x, y) => (${x}, ${y})`);
+    console.log(`mapPosition: (x, y) => (${x}, ${y}) r = ${r}`);
 
     return {
       "x": x,
@@ -162,10 +163,6 @@ export class AppComponent implements OnInit {
       "z": y
     }
 
-  }
-
-  long2UTM(long: number): number {
-    return (Math.floor((long + 180) / 6) % 60) + 1;
   }
 
 }

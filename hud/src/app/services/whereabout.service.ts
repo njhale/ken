@@ -25,7 +25,7 @@ export class WhereaboutService {
   getMessages(): Observable<{}> {
     let observable = new Observable(observer => {
       this.socket.on('whereabouts', (data) => {
-        console.log('getting whereabout data...', data);
+        //console.log('getting whereabout data...', data);
         observer.next(data as Whereabout);
       });
       return () => {

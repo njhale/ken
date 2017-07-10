@@ -11,7 +11,13 @@ export class SpacialService {
   constructor() { }
 
   private toRadians(degrees: number) {
-    console.log(`degrees: ${degrees}`);
+    if (degrees < 0) {
+      // Add 360 to get it to the positive representation
+      degrees += 360;
+    }
+    // % 360 to bound the angle
+    degrees = degrees % 360;
+
     return (Math.PI / 180) * degrees;
   }
 
@@ -24,12 +30,13 @@ export class SpacialService {
     // Convert all lat and lon to radians
     let fromRads = from.position.map(this.toRadians);
     let toRads = to.position.map(this.toRadians);
-    let diffRads = [];
+    let diff = [];
     to.position.forEach((e, i, arr) => {
-      diffRads.push(e - from.position[i]);
+      diff.push(e - from.position[i]);
     });
+    let diffRads = diff.map(this.toRadians);
 
-    console.log(`diffRads: ${diffRads}`);
+    console.log(`angle()... fromRads: ${fromRads} toRads: ${toRads} diffRads: ${diffRads}`);
 
     let y = Math.sin(diffRads[1]) * Math.cos(toRads[0]);
     let x = Math.cos(fromRads[0]) * Math.sin(toRads[0]) - Math.sin(fromRads[0])
@@ -55,14 +62,13 @@ export class SpacialService {
       // Convert all lat and lon to radians
       let fromRads = from.position.map(this.toRadians);
       let toRads = to.position.map(this.toRadians);
-
-      console.log(`fromRads: ${fromRads} toRads: ${toRads}`);
-      let diffRads = [];
-      toRads.forEach((e, i, arr) => {
-        diffRads.push(e - fromRads[i]);
+      let diff = [];
+      to.position.forEach((e, i, arr) => {
+        diff.push(e - from.position[i]);
       });
+      let diffRads = diff.map(this.toRadians);
 
-      console.log(`diffRads: ${diffRads}`);
+      console.log(`distance()... fromRads: ${fromRads} toRads: ${toRads} diffRads: ${diffRads}`);
 
       // Use the haversine formula to calculate distance in meters
       let a = Math.sin(diffRads[0]/2) * Math.sin(diffRads[0]/2) +
