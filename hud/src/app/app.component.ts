@@ -42,25 +42,18 @@ export class AppComponent implements OnInit {
 
     this.name = `nick-${Math.random() * 1000 + 1}`;
 
+    // Instantiate the whereabout
+    this.wb = new Whereabout();
+    this.wb.name = this.name;
+
     // Get the lat and long every second
     setInterval(() => {
-      let lat = 0;
-      let lon = 0;
-
+      // Get the geo coords and once done emit to the socket
       navigator.geolocation.getCurrentPosition((position) => {
-        lat = position.coords.latitude;
-        lon = position.coords.longitude;
+        this.wb.position[0] = position.coords.latitude;
+        this.wb.position[1] = position.coords.longitude;
+        this.whereaboutService.socket.emit('whereabouts', this.wb);
       });
-
-      // Send the data through the socket
-      this.wb = {
-        name: this.name,
-        position: [lat, lon, 0],
-        tm: new Date()
-      };
-
-      this.whereaboutService.socket.emit('whereabouts', this.wb);
-
     }, 1000);
 
     // Delete all whereabouts older than 10 seconds
@@ -133,7 +126,7 @@ export class AppComponent implements OnInit {
       if (wb.name !== this.name) {
         this.whereabouts.set(wb.name, wb);
         this.whereaboutskeys = Array.from(this.whereabouts.keys());
-        console.log(`Receiving data for ${wb.name}`);
+        console.log(`Receiving data for ${wb.name} - whereabouts ${wb.position}`);
         // try {
         //   // attempt to set the position attribute
         //   var billboard = document.getElementById(wb.name);
@@ -153,8 +146,6 @@ export class AppComponent implements OnInit {
   }
 
   mapPosition(wb: Whereabout): any {
-
-    console.log(`Whereabouts: ${wb.position} - ${this.wb.position}`);
     // Get the distance in meters between both points
     let r = this.spacialService.distance(this.wb, wb);
     // Get the angle in radians between both points
