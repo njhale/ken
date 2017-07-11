@@ -27,6 +27,7 @@ export class SpacialService {
 
   angle(from: Whereabout, to: Whereabout) : number {
 
+
     // Convert all lat and lon to radians
     let fromRads = from.position.map(this.toRadians);
     let toRads = to.position.map(this.toRadians);
@@ -36,20 +37,20 @@ export class SpacialService {
     });
     let diffRads = diff.map(this.toRadians);
 
-    console.log(`angle()... fromRads: ${fromRads} toRads: ${toRads} diffRads: ${diffRads}`);
+    // var R = 6371e3; // metres
+    // var φ1 = lat1.toRadians();
+    // var φ2 = lat2.toRadians();
+    // var Δφ = (lat2-lat1).toRadians();
+    // var Δλ = (lon2-lon1).toRadians();
+
+    //console.log(`angle()... fromRads: ${fromRads} toRads: ${toRads} diffRads: ${diffRads}`);
 
     let y = Math.sin(diffRads[1]) * Math.cos(toRads[0]);
     let x = Math.cos(fromRads[0]) * Math.sin(toRads[0]) - Math.sin(fromRads[0])
             * Math.cos(toRads[0]) * Math.cos(diffRads[1]);
 
     //console.log(`toDegrees: (x, y) => (${x}, ${y})`);
-
     let brng = Math.atan2(y, x);
-    brng = this.toDegrees(brng);
-    brng = (brng + 360) % 360;
-    brng = 360 - brng; // count degrees counter-clockwise - remove to make clockwise
-    // return to radians
-    brng = this.toRadians(brng);
 
     return brng;
   }
@@ -68,7 +69,7 @@ export class SpacialService {
       });
       let diffRads = diff.map(this.toRadians);
 
-      console.log(`distance()... fromRads: ${fromRads} toRads: ${toRads} diffRads: ${diffRads}`);
+      //console.log(`distance()... fromRads: ${fromRads} toRads: ${toRads} diffRads: ${diffRads}`);
 
       // Use the haversine formula to calculate distance in meters
       let a = Math.sin(diffRads[0]/2) * Math.sin(diffRads[0]/2) +
@@ -85,3 +86,5 @@ export class SpacialService {
     return d;
   }
 }
+
+// Equations ripped from http://www.movable-type.co.uk/scripts/latlong.html

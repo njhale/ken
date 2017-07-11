@@ -4,14 +4,6 @@
     <img id="groose" src="https://yt3.ggpht.com/-48LZOmdRJAc/AAAAAAAAAAI/AAAAAAAAAAA/BAu12b3YJ7Y/s900-c-k-no-mo-rj-c0xffffff/photo.jpg">
   </a-assets>
 
-
-  <a-entity look-at=[camera] *ngFor="let key of whereaboutskeys" id="{{key}}">
-    <!-- Label a plane, three times. -->
-    <a-plane width="1" depth="1"
-      text="baseline: center; align: center; font: kelsonsans; color: black; value: groose {{key}}">
-      <a-image src='#groose'></a-image>
-    </a-plane>
-  </a-entity>
 </a-scene>
 
 <!-- Set input video -->
