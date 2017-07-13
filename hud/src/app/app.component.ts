@@ -105,9 +105,10 @@ export class AppComponent implements OnInit {
         this.direction = this.spacialService.toCounterClockwise(dir);
 
         console.log(`Compass Heading Correction: ${dir} -> ${this.direction}`);
+        //let correction = 360 - this.direction;
         // Grab the board element and rotate it
         // let board = document.getElementById('board');
-        // board.setAttribute('rotation', `0 ${corDir} 0`);
+        // board.setAttribute('rotation', `0 ${correction} 0`);
       }
     }, false);
 
@@ -238,10 +239,15 @@ export class AppComponent implements OnInit {
 
     // Adjust theta if we have heading info to align coordinates with north
     if (this.direction >= 0) {
-      let correction = 360 - this.direction;
+      //let correction = 360 - this.direction;
       let thetaDegrees = this.spacialService.toDegrees(theta);
-      let corrected = thetaDegrees + correction;
-      theta = this.spacialService.toRadians(corrected);
+      let corrected = 360 - thetaDegrees - this.direction;
+      if (corrected > 0) {
+        theta = this.spacialService.toRadians(corrected);
+      } else {
+        theta = this.spacialService.toRadians(360 - corrected);
+      }
+
     }
 
     // Calculate the cartesian coordinates from the given polar coords
