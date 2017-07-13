@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   private name: string;
   private cameraSource: CameraSource;
   private direction: number;
+  private dirCount: number;
   private maxAge: number = 5000;// milliseconds -> 5 seconds
 
 
@@ -47,18 +48,7 @@ export class AppComponent implements OnInit {
     this.wb.position = [0, 0, 0];
     this.wb.tm = new Date();
     this.direction = -1;
-
-
-    // Set the event listener for compass degrees
-    window.addEventListener('deviceorientation', (eventData) => {
-      // alpha is the compass direction the device is facing in degrees
-      var dir = eventData.alpha;
-      // console.log(`compass: ${dir}`);
-      // Set the direction in degrees
-      if (this.direction < 0) {
-        this.direction = dir;
-      }
-    }, false);
+    this.dirCount = 0;
   }
 
   startCamera(id: any) {
@@ -92,9 +82,34 @@ export class AppComponent implements OnInit {
 
     // Initialize the incoming whereabouts
     this.initializeData();
+
   }
 
   initializeData(): void {
+    //let count = 0;
+    // Set the event listener for compass degrees
+    window.addEventListener('deviceorientationabsolute', (eventData: DeviceOrientationEvent) => {
+      // alpha is the compass direction the device is facing in degrees
+      let alpha = eventData.alpha;
+      let beta = eventData.beta;
+      let gamma = eventData.gamma;
+      // Get the true direction using all rotational info
+      let dir = this.spacialService.compassHeading(alpha, beta, gamma);
+
+      console.log(`Bearing off north: ${dir}`);
+      // console.log(`compass: ${dir}`);
+      // Set the direction in degrees
+      if (this.direction < 0) {
+
+        // Correct the direction to match the right handed system
+        this.direction = this.spacialService.toCounterClockwise(dir);
+
+        console.log(`Compass Heading Correction: ${dir} -> ${this.direction}`);
+        // Grab the board element and rotate it
+        // let board = document.getElementById('board');
+        // board.setAttribute('rotation', `0 ${corDir} 0`);
+      }
+    }, false);
 
     // Get the lat and long every second
     setInterval(() => {
@@ -102,11 +117,11 @@ export class AppComponent implements OnInit {
       navigator.geolocation.getCurrentPosition((position) => {
         this.wb.position[0] = position.coords.latitude;
         this.wb.position[1] = position.coords.longitude;
-        console.log(`position: ${this.wb.position}`);
+        //console.log(`position: ${this.wb.position}`);
         this.wb.tm = new Date();
         this.whereaboutService.socket.emit('whereabouts', this.wb);
       });
-    }, 1000);
+    }, 500);
 
     this.connection = this.whereaboutService.getMessages().subscribe((message) => {
       let wb = message as Whereabout;
@@ -121,7 +136,7 @@ export class AppComponent implements OnInit {
 
           if (billboard === null) {
             // Get the parent element
-            var scene = document.getElementById('a-scene');
+            var scene = document.getElementById('board');
             // Create the billboard
             // <a-entity look-at=[camera] *ngFor="let key of whereaboutskeys" id="{{key}}" position="1 0 1">
             //   <!-- Label a plane, three times. -->
@@ -132,15 +147,15 @@ export class AppComponent implements OnInit {
             // </a-entity>
             billboard = document.createElement('a-entity');
             billboard.id = wb.name;
-            billboard.setAttribute('look-at', '0 1 0');
+            billboard.setAttribute('look-at', '[camera]');
             // Create a plane for the user image to sit in
-            var plane = document.createElement('a-plane');
+            let plane = document.createElement('a-plane');
+            plane.id = `${wb.name}-plane`;
             plane.setAttribute('width', '1');
             plane.setAttribute('depth', '1');
-            plane.setAttribute('text', `baseline: center; align: center;
-              font: kelsonsans; color: red; value: ${name} ${this.spacialService.distance(this.wb, wb)}m`);
             // Create the image
-            var image = document.createElement('a-image');
+            let image = document.createElement('a-image');
+            image.id = `${wb.name}-image`;
             image.setAttribute('src', '#groose');
             // Append the image to the plane
             plane.appendChild(image);
@@ -149,6 +164,16 @@ export class AppComponent implements OnInit {
             // Append the billboard to the scene
             scene.appendChild(billboard);
           }
+          // Set the text
+          let plane = document.getElementById(`${wb.name}-plane`);
+          let r = this.spacialService.distance(this.wb, wb);
+          plane.setAttribute('text', `baseline: center; align: center;
+            font: kelsonsans; color: red; value: ${r}m`);
+          // // Set the image if warranted
+          // if (r > 50) {
+          //   let image = document.getElementById(`${wb.name}-image`);
+          //   image.setAttribute('src', '#target');
+          // }
           // Set the position
           billboard.setAttribute('position', this.mapPosition(wb));
 
@@ -194,32 +219,41 @@ export class AppComponent implements OnInit {
     // Get the distance in meters between both points
     let r = this.spacialService.distance(this.wb, wb);
     // Get the angle in radians between both points
-    let theta = this.spacialService.angle(this.wb, wb);
-    // Correct for direction off of north
-    if (this.direction > 0) {
-      // Correct the direction to match the mapped polar coords
-      let corDir = (this.direction + 450) % 360;
-      theta = theta + (Math.PI / 180) * corDir;
-    }
+    let theta = this.spacialService.azimuth(this.wb, wb);
+    // // Correct for direction off of north
+    // if (this.direction > 0) {
+    //   // Correct the direction to match the mapped polar coords
+    //   let corDir = (-1 * this.direction - 90) % 360;
+    //   theta = this.spacialService.toDegrees(theta) + corDir;
+    //   theta = this.spacialService.toRadians(theta);
+    // }
 
     // if (r > 200) {
     //   r = r / 10;
     // }
     //
-    if (r > 1000) {
-      r = r / 100;
+    if (r > 100) {
+      r = 1;
+    }
+
+    // Adjust theta if we have heading info to align coordinates with north
+    if (this.direction >= 0) {
+      let correction = 360 - this.direction;
+      let thetaDegrees = this.spacialService.toDegrees(theta);
+      let corrected = thetaDegrees + correction;
+      theta = this.spacialService.toRadians(corrected);
     }
 
     // Calculate the cartesian coordinates from the given polar coords
     let x = r * Math.cos(theta);
-    let y = r * Math.sin(theta);
+    let z = r * Math.sin(theta);
 
-    console.log(`mapPosition: (x, y) => (${x}, ${y}) r = ${r} theta: ${theta} direction: ${this.direction}`);
+    console.log(`mapPosition: (x, y) => (${x}, ${z}) r = ${r} theta: ${theta} direction: ${this.direction}`);
 
     return {
       "x": x,
-      "y": "1",
-      "z": y
+      "y": "1.6",
+      "z": z
     }
 
   }
