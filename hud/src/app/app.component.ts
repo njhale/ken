@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
         this.wb.tm = new Date();
         this.whereaboutService.socket.emit('whereabouts', this.wb);
       });
-    }, 500);
+    }, 250);
 
     this.connection = this.whereaboutService.getMessages().subscribe((message) => {
       let wb = message as Whereabout;

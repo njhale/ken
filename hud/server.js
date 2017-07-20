@@ -12,7 +12,7 @@ var server = http.createServer(app);
 
 var io = require('socket.io')(server);
 
-var ioCli = require('socket.io-client')('https://ken.openshift.nhale.org', {rejectUnauthorized: false});
+var ioCli = require('socket.io-client')('https://ken.ocp.nhale.org', {rejectUnauthorized: false});
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -55,8 +55,8 @@ io.on('connection', (socket) => {
   console.log(`connection confirmed from ${socket.id}`);
 
   socket.on('whereabouts', (msg) => {
-    console.log('hello?');
-    console.log(`whereabout received: ${JSON.stringify(msg)}`);
+    //console.log('hello?');
+    //console.log(`whereabout received: ${JSON.stringify(msg)}`);
     io.emit('whereabouts', msg);
   });
 
